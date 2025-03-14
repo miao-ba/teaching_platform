@@ -1,3 +1,46 @@
+/* 側邊欄樣式 */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+    color: white;
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.sidebar-header {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.sidebar .nav-link {
+    color: rgba(255,255,255,0.8);
+    padding: 0.8rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    color: white;
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* 內容區域樣式 */
+.content-wrapper {
+    flex: 1;
+    margin-left: 250px;
+    transition: all 0.3s ease;
+}
+
+.header {
+    background-color: #4e73df;
+    color: white;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
 body {
     font-family: 'Nunito', sans-serif;
     background-color: #f8f9fc;
@@ -11,15 +54,23 @@ body {
     padding: 0 15px;
 }
 
-.header {
-    background-color: #4e73df;
-    color: white;
-    padding: 20px 0;
-}
-
 .footer {
     background-color: #f8f9fc;
     padding: 20px 0;
     border-top: 1px solid #e3e6f0;
     margin-top: 40px;
+}
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .sidebar {
+        margin-left: -250px;
+    }
+    
+    .content-wrapper {
+        margin-left: 0;
+    }
+    
+    .sidebar.show {
+        margin-left: 0;
+    }
 }

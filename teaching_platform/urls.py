@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from .views import home, test_celery
 from django.views.generic import TemplateView
 from django.views.defaults import page_not_found, server_error, permission_denied
@@ -9,6 +9,7 @@ from django.views.defaults import page_not_found, server_error, permission_denie
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
+    path('accounts/', include('apps.accounts.urls')),  # 添加這一行
     path('test-celery/', test_celery, name='test_celery'),
 ]
 

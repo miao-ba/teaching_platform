@@ -17,6 +17,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',  # 靜態檔案處理
+    
+    # 自定義應用
+    'apps.accounts.apps.AccountsConfig',  # 使用完整路徑
 ]
 
 # 中間件設定
@@ -99,3 +102,13 @@ CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localho
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'home'  # 可以修改為儀表板或其他適合的頁面
+
+# 電子郵件設定 (開發環境)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# 電子郵件內容設定
+DEFAULT_FROM_EMAIL = '教學語音處理平台 <noreply@teaching-platform.example.com>'
+EMAIL_SUBJECT_PREFIX = '[教學語音處理平台] '

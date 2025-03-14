@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}使用統計 - {{ block.super }}{% endblock %}
+{% block page_title %}使用統計{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">使用摘要</h5>
+                <div class="btn-group">
+                    <a href="?days=7" class="btn btn-sm btn-outline-primary {% if days == 7 %}active{% endif %}">7天</a>
+                    <a href="?days=30" class="btn btn-sm btn-outline-primary {% if days == 30 %}active{% endif %}">30天</a>
+                    <a href="?days=90" class="btn btn-sm btn-outline-primary {% if days == 90 %}active{% endif %}">90天</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for item in usage_summary.service_counts %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ item.service_type|title }}</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>使用次數:</span>
+                                    <span class="badge bg-primary">{{ item.count }}</span>
+                                </div>
+                                {% for token in usage_summary.token_usage %}
+                                    {% if token.service_type == item.service_type %}
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <span>Token 用量:</span>
+                                        <span class="badge bg-secondary">{{ token.total_tokens }}</span>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                                {% for duration in usage_summary.audio_duration %}
+                                    {% if duration.service_type == item.service_type %}
+                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                        <span>音訊時長 (秒):</span>
+                                        <span class="badge bg-info">{{ duration.total_duration|floatformat:1 }}</span>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            目前尚無使用記錄。
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title mb-0">每日使用情況</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="dailyUsageChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title mb-0">最近活動</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for log in usage_summary.recent_logs %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ log.get_service_type_display }}</h6>
+                            <small>{{ log.created_at|date:"Y/m/d H:i" }}</small>
+                        </div>
+                        <p class="mb-1">{{ log.operation }}</p>
+                        <small>
+                            {% if log.tokens_used %}Token: {{ log.tokens_used }}{% endif %}
+                            {% if log.audio_duration %}時長: {{ log.audio_duration|floatformat:1 }}秒{% endif %}
+                            {% if log.model_name %}模型: {{ log.model_name }}{% endif %}
+                        </small>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item">
+                        <p class="mb-0">目前尚無活動記錄。</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 每日使用情況圖表
+    var dailyUsageCtx = document.getElementById('dailyUsageChart').getContext('2d');
+    var dailyUsageData = {
+        labels: [
+            {% for item in daily_usage %}
+                "{{ item.date|date:'m/d' }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: '使用次數',
+            data: [
+                {% for item in daily_usage %}
+                    {{ item.count }},
+                {% endfor %}
+            ],
+            backgroundColor: 'rgba(78, 115, 223, 0.2)',
+            borderColor: 'rgba(78, 115, 223, 1)',
+            borderWidth: 1,
+            tension: 0.1
+        }]
+    };
+    var dailyUsageChart = new Chart(dailyUsageCtx, {
+        type: 'line',
+        data: dailyUsageData,
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

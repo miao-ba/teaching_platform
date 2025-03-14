@@ -1,0 +1,33 @@
+<!-- templates/includes/header.html -->
+<header class="header">
+    <div class="container-fluid py-2">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <button id="sidebar-toggle" class="btn btn-link text-white me-3 d-md-none">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+                <a href="{% url 'home' %}" class="text-decoration-none">
+                    <h1 class="h3 text-white mb-0">教學語音處理平台</h1>
+                </a>
+            </div>
+            
+            <div class="d-flex align-items-center">
+                {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">個人設定</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">登出</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-outline-light me-2">登入</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-light">註冊</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</header>

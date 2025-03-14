@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load static %}
+{% load account_tags %}
+{% block title %}個人設定 - {{ block.super }}{% endblock %}
+{% block page_title %}個人設定{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">個人資料</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ user_form.first_name.id_for_label }}" class="form-label">{{ user_form.first_name.label }}</label>
+                            {{ user_form.first_name }}
+                            {% if user_form.first_name.errors %}
+                            <div class="text-danger">
+                                {% for error in user_form.first_name.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ user_form.last_name.id_for_label }}" class="form-label">{{ user_form.last_name.label }}</label>
+                            {{ user_form.last_name }}
+                            {% if user_form.last_name.errors %}
+                            <div class="text-danger">
+                                {% for error in user_form.last_name.errors %}{{ error }}{% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ user_form.email.id_for_label }}" class="form-label">{{ user_form.email.label }}</label>
+                        {{ user_form.email }}
+                        {% if user_form.email.errors %}
+                        <div class="text-danger">
+                            {% for error in user_form.email.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.subscription_plan.id_for_label }}" class="form-label">{{ form.subscription_plan.label }}</label>
+                        {{ form.subscription_plan }}
+                        {% if form.subscription_plan.errors %}
+                        <div class="text-danger">
+                            {% for error in form.subscription_plan.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">儲存變更</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title mb-0">帳戶安全</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">密碼</label>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            ••••••••••
+                        </div>
+                        <a href="{% url 'accounts:password_reset' %}" class="btn btn-outline-primary">變更密碼</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">訂閱資訊</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">目前方案</label>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <strong>{{ form.instance.get_subscription_plan_display }}</strong>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-outline-primary">升級</a>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">帳戶創建日期</label>
+                    <div>{{ form.instance.created_at|date:"Y 年 m 月 d 日" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title mb-0">資源使用狀況</h5>
+            </div>
+            <div class="card-body">
+                {% for service, limit in monthly_quota.items %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>{{ service|title }}</span>
+                        <span>{{ used_quota|get_item:service|default:"0" }} / {% if limit < 0 %}無限制{% else %}{{ limit }}{% endif %}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" role="progressbar" style="width: {{ quota_percentages|get_item:service }}%;" aria-valuenow="{{ quota_percentages|get_item:service }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
