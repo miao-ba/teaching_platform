@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}伺服器錯誤 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <h1>500</h1>
+    <h2>伺服器錯誤</h2>
+    <p>抱歉，服務器遇到了問題。請稍後再試或聯繫管理員。</p>
+    <a href="{% url 'home' %}" class="btn btn-primary">返回首頁</a>
+</div>
+{% endblock %}

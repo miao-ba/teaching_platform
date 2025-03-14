@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}頁面未找到 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <h1>404</h1>
+    <h2>頁面未找到</h2>
+    <p>抱歉，您請求的頁面不存在。</p>
+    <a href="{% url 'home' %}" class="btn btn-primary">返回首頁</a>
+</div>
+{% endblock %}

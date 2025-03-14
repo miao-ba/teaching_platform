@@ -1,0 +1,25 @@
+# Web 框架
+Django
+whitenoise
+
+# 資料庫
+psycopg2-binary
+pgvector
+
+# 非同步任務
+celery
+redis
+
+# AI 與 NLP
+langchain
+google-generativeai
+openai
+
+# 音訊處理
+librosa
+pydub
+vosk
+
+# 工具與實用程式
+python-dotenv
+Pillow
