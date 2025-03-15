@@ -10,4 +10,7 @@ urlpatterns = [
     path('delete/<int:pk>/', views.AudioDeleteView.as_view(), name='delete'),
     path('<int:pk>/', views.AudioDetailView.as_view(), name='detail'),
     path('status/<int:pk>/', views.audio_status, name='status'),
+    path('transcript/<int:transcript_id>/download/', views.download_transcript, name='download_transcript'),
+    path('transcript/<int:transcript_id>/download-srt/', views.download_srt, name='download_srt'),
+    path('transcript/<int:transcript_id>/download-vtt/', views.download_vtt, name='download_vtt'),
 ]

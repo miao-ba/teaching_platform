@@ -210,3 +210,103 @@ def audio_status(request, pk):
         return JsonResponse(data)
     except AudioFile.DoesNotExist:
         return JsonResponse({'error': '找不到指定的音訊檔案'}, status=404)
+
+# 在現有的 views.py 文件中添加下列內容
+
+from django.http import HttpResponse, FileResponse, Http404
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
+from .models import Transcript, AudioFile
+from core.audio.srt import SRTGenerator, VTTGenerator
+
+@login_required
+@require_GET
+def download_transcript(request, transcript_id):
+    """下載純文本格式的轉錄內容"""
+    # 獲取轉錄記錄，確保只能下載自己的轉錄
+    transcript = get_object_or_404(Transcript, id=transcript_id, audio_file__user=request.user)
+    
+    # 獲取檔案名稱
+    filename = f"{transcript.audio_file.title}_transcript.txt"
+    safe_filename = filename.replace(' ', '_').encode('utf-8', 'ignore').decode('utf-8')
+    
+    # 創建響應
+    response = HttpResponse(transcript.full_text, content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="{safe_filename}"'
+    
+    return response
+
+@login_required
+@require_GET
+def download_srt(request, transcript_id):
+    """下載 SRT 格式的字幕檔案"""
+    # 獲取轉錄記錄
+    transcript = get_object_or_404(Transcript, id=transcript_id, audio_file__user=request.user)
+    
+    # 獲取片段
+    segments = []
+    for segment in transcript.segments.all().order_by('start_time'):
+        segments.append({
+            'start': segment.start_time,
+            'end': segment.end_time,
+            'text': segment.text,
+            'speaker_id': segment.speaker_id,
+            'speaker_name': segment.speaker_name
+        })
+    
+    # 生成 SRT 內容
+    include_speaker = request.GET.get('include_speaker', '1') == '1'
+    merge_short = request.GET.get('merge_short', '1') == '1'
+    
+    if merge_short:
+        segments = SRTGenerator.merge_short_segments(segments)
+    
+    srt_content = SRTGenerator.generate_from_segments(segments, include_speaker)
+    
+    # 獲取檔案名稱
+    filename = f"{transcript.audio_file.title}_subtitle.srt"
+    safe_filename = filename.replace(' ', '_').encode('utf-8', 'ignore').decode('utf-8')
+    
+    # 創建響應
+    response = HttpResponse(srt_content, content_type='text/srt; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="{safe_filename}"'
+    
+    return response
+
+@login_required
+@require_GET
+def download_vtt(request, transcript_id):
+    """下載 WebVTT 格式的字幕檔案"""
+    # 獲取轉錄記錄
+    transcript = get_object_or_404(Transcript, id=transcript_id, audio_file__user=request.user)
+    
+    # 獲取片段
+    segments = []
+    for segment in transcript.segments.all().order_by('start_time'):
+        segments.append({
+            'start': segment.start_time,
+            'end': segment.end_time,
+            'text': segment.text,
+            'speaker_id': segment.speaker_id,
+            'speaker_name': segment.speaker_name
+        })
+    
+    # 生成 VTT 內容
+    include_speaker = request.GET.get('include_speaker', '1') == '1'
+    merge_short = request.GET.get('merge_short', '1') == '1'
+    
+    if merge_short:
+        segments = SRTGenerator.merge_short_segments(segments)
+    
+    vtt_content = VTTGenerator.generate_from_segments(segments, include_speaker)
+    
+    # 獲取檔案名稱
+    filename = f"{transcript.audio_file.title}_subtitle.vtt"
+    safe_filename = filename.replace(' ', '_').encode('utf-8', 'ignore').decode('utf-8')
+    
+    # 創建響應
+    response = HttpResponse(vtt_content, content_type='text/vtt; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="{safe_filename}"'
+    
+    return response
