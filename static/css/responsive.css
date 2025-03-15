@@ -1,0 +1,659 @@
+/* static/css/responsive.css */
+
+/*----------------------------------------------
+ * 響應式設計與行動裝置支援
+ *----------------------------------------------*/
+
+/* 通用媒體查詢斷點 */
+/* 
+ * - 超小屏幕（手機，<576px）
+ * - 小屏幕（平板，≥576px）
+ * - 中等屏幕（小筆電，≥768px）
+ * - 大屏幕（桌面，≥992px）
+ * - 特大屏幕（大桌面，≥1200px）
+ * - 超寬屏幕（寬屏桌面，≥1400px）
+ */
+
+/*----------------------------------------------
+ * 1. 基礎響應式設定
+ *----------------------------------------------*/
+ html {
+    font-size: 16px;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+img, svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 容器設置 */
+.container-fluid {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* 超小屏幕設備（手機等） */
+@media (max-width: 575.98px) {
+    html {
+        font-size: 14px; /* 稍微減小基本字體大小 */
+    }
+    
+    .container-fluid {
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+    
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.3rem; }
+    h4 { font-size: 1.2rem; }
+    h5 { font-size: 1.1rem; }
+    h6 { font-size: 1rem; }
+    
+    /* 更緊湊的間距 */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/*----------------------------------------------
+ * 2. 布局響應式調整
+ *----------------------------------------------*/
+
+/* 側邊欄響應式 */
+@media (max-width: 991.98px) {
+    .sidebar {
+        margin-left: -250px;
+        position: fixed;
+        z-index: 1040;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .sidebar.show {
+        margin-left: 0;
+    }
+    
+    .content-wrapper {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    /* 側邊欄顯示時的遮罩 */
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1039;
+    }
+    
+    .sidebar-backdrop.show {
+        display: block;
+    }
+}
+
+/* 針對平板的側邊欄迷你模式 */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    body.sidebar-mini .sidebar {
+        width: 70px;
+        margin-left: 0;
+    }
+    
+    body.sidebar-mini .content-wrapper {
+        margin-left: 70px;
+    }
+    
+    body.sidebar-mini .sidebar .nav-text,
+    body.sidebar-mini .sidebar .sidebar-footer,
+    body.sidebar-mini .sidebar .sidebar-section-title {
+        display: none;
+    }
+    
+    body.sidebar-mini .sidebar .nav-link {
+        justify-content: center;
+        padding: 0.8rem 0.5rem;
+    }
+    
+    body.sidebar-mini .sidebar .nav-link i {
+        margin-right: 0;
+        font-size: 1.25rem;
+    }
+    
+    body.sidebar-mini .sidebar-header {
+        justify-content: center;
+        padding: 1rem 0.5rem;
+    }
+    
+    body.sidebar-mini .sidebar-title {
+        display: none;
+    }
+}
+
+/* 頁頭響應式調整 */
+@media (max-width: 767.98px) {
+    .header h1.h3 {
+        font-size: 1.2rem;
+    }
+    
+    /* 在手機上隱藏搜索框 */
+    .header .search-form {
+        display: none;
+    }
+    
+    /* 顯示獨立的搜索頁面或搜索抽屜按鈕 */
+    .header .search-toggle {
+        display: block;
+    }
+}
+
+/* 主內容區域響應式調整 */
+@media (max-width: 991.98px) {
+    .main-content {
+        padding: 1rem;
+    }
+    
+    /* 減少卡片間距 */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    /* 調整格線系統 */
+    .row {
+        margin-right: -0.5rem;
+        margin-left: -0.5rem;
+    }
+    
+    .row > [class^="col-"] {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+}
+
+/* 頁尾響應式調整 */
+@media (max-width: 767.98px) {
+    .footer {
+        text-align: center;
+    }
+    
+    .footer .d-flex {
+        flex-direction: column;
+    }
+    
+    .footer .list-inline {
+        margin-top: 1rem;
+    }
+}
+
+/*----------------------------------------------
+ * 3. 元件響應式優化
+ *----------------------------------------------*/
+
+/* 卡片與面板 */
+@media (max-width: 767.98px) {
+    .card-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    /* 在小屏幕上簡化卡片標題區域 */
+    .card-header .btn-group,
+    .card-header .dropdown {
+        margin-left: auto;
+    }
+    
+    .card-header h5 {
+        font-size: 1rem;
+        max-width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* 垂直堆疊卡片動作按鈕 */
+    .card-header .d-flex {
+        flex-wrap: wrap;
+    }
+    
+    .card-header .btn-group .btn,
+    .card-header .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* 表格響應式 */
+@media (max-width: 767.98px) {
+    /* 轉換表格為卡片式佈局 */
+    .table-responsive-card table,
+    .table-responsive-card thead,
+    .table-responsive-card tbody,
+    .table-responsive-card th,
+    .table-responsive-card td,
+    .table-responsive-card tr {
+        display: block;
+    }
+    
+    .table-responsive-card thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+    
+    .table-responsive-card tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--theme-border-color);
+        border-radius: 0.35rem;
+    }
+    
+    .table-responsive-card td {
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        border-bottom: 1px solid var(--theme-border-color);
+    }
+    
+    .table-responsive-card td:last-child {
+        border-bottom: none;
+    }
+    
+    .table-responsive-card td:before {
+        position: absolute;
+        left: 0.75rem;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        content: attr(data-label);
+    }
+}
+
+/* 表單響應式 */
+@media (max-width: 767.98px) {
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    /* 下拉選單全寬 */
+    .dropdown-menu {
+        width: 100%;
+    }
+    
+    /* 調整表單布局 */
+    .form-row {
+        margin-right: -0.5rem;
+        margin-left: -0.5rem;
+    }
+    
+    .form-row > [class^="col-"] {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+}
+
+/* 按鈕響應式 */
+@media (max-width: 575.98px) {
+    /* 在超小屏幕上使按鈕變大，便於觸控 */
+    .btn {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* 按鈕組改為垂直布局 */
+    .btn-group-responsive {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-group-responsive .btn {
+        margin-bottom: 0.5rem;
+        margin-left: 0 !important;
+        border-radius: 0.35rem !important;
+    }
+    
+    /* 堆疊在一起的按鈕 */
+    .mobile-btn-stack {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .mobile-btn-stack .btn {
+        margin-bottom: 0.5rem;
+    }
+    
+    .mobile-btn-stack .btn:last-child {
+        margin-bottom: 0;
+    }
+}
+
+/* 模態對話框響應式 */
+@media (max-width: 575.98px) {
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-content {
+        border-radius: 0.25rem;
+    }
+    
+    .modal-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/*----------------------------------------------
+ * 4. 圖表和數據視覺化響應式
+ *----------------------------------------------*/
+@media (max-width: 767.98px) {
+    .chart-container {
+        height: 250px !important;
+    }
+    
+    /* 簡化圖表 */
+    .mobile-simple-chart .chart-legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .mobile-simple-chart .chart-legend-item {
+        margin: 0 0.5rem 0.5rem 0;
+    }
+}
+
+/*----------------------------------------------
+ * 5. 觸控優化
+ *----------------------------------------------*/
+@media (max-width: 991.98px) {
+    /* 增加可點擊元素的點擊區域 */
+    .nav-link,
+    .dropdown-item,
+    .btn,
+    .form-check-label,
+    .list-group-item {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* 確保足夠的間距防止誤觸 */
+    .btn + .btn,
+    .form-check + .form-check {
+        margin-left: 0.5rem;
+    }
+    
+    /* 增加輸入欄位的高度以便於觸控 */
+    .form-control,
+    .form-select {
+        height: calc(1.5em + 1rem + 2px);
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* 優化下拉選單 */
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+/*----------------------------------------------
+ * 6. 行動優先特性與功能
+ *----------------------------------------------*/
+
+/* 底部行動導航欄 - 在小屏幕上顯示 */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--theme-bg-card);
+    border-top: 1px solid var(--theme-border-color);
+    z-index: 1000;
+    padding: 0.5rem 0;
+}
+
+@media (max-width: 767.98px) {
+    .mobile-nav {
+        display: flex;
+    }
+    
+    /* 為底部導航條留出空間 */
+    body {
+        padding-bottom: 60px;
+    }
+    
+    .footer {
+        margin-bottom: 60px;
+    }
+}
+
+.mobile-nav-item {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem 0;
+    color: var(--theme-text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.mobile-nav-item.active {
+    color: var(--primary);
+}
+
+.mobile-nav-item i {
+    display: block;
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.mobile-nav-item span {
+    display: block;
+    font-size: 0.75rem;
+}
+
+/* 行動裝置上的浮動動作按鈕 (FAB) */
+.mobile-fab {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    bottom: 4.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+.mobile-fab:hover,
+.mobile-fab:focus {
+    background-color: var(--primary-dark);
+    color: white;
+    transform: scale(1.05);
+    text-decoration: none;
+}
+
+.mobile-fab i {
+    font-size: 1.5rem;
+}
+
+@media (max-width: 767.98px) {
+    .mobile-fab {
+        display: flex;
+    }
+}
+
+/* 行動裝置抽屜菜單 */
+.mobile-drawer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: var(--theme-bg-card);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 1050;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    max-height: 85vh;
+    overflow-y: auto;
+    display: none;
+}
+
+.mobile-drawer.show {
+    transform: translateY(0);
+}
+
+.mobile-drawer-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1049;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.mobile-drawer-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--theme-border-color);
+}
+
+.mobile-drawer-body {
+    padding: 1rem;
+}
+
+.mobile-drawer-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--theme-border-color);
+}
+
+@media (max-width: 767.98px) {
+    .mobile-drawer {
+        display: block;
+    }
+}
+
+/* 下拉式重新整理控件（用於內容重新整理） */
+.pull-to-refresh {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    color: var(--theme-text-secondary);
+    background-color: var(--theme-bg-secondary);
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+.pull-to-refresh.visible {
+    transform: translateY(0);
+}
+
+.pull-to-refresh.refreshing {
+    transform: translateY(0);
+}
+
+.pull-to-refresh i {
+    margin-right: 0.5rem;
+}
+
+@media (max-width: 767.98px) {
+    .pull-to-refresh {
+        display: block;
+    }
+    
+    .pull-to-refresh-enabled {
+        position: relative;
+        overflow-y: hidden;
+    }
+}
+
+/*----------------------------------------------
+ * 7. 列印優化
+ *----------------------------------------------*/
+@media print {
+    body {
+        background-color: #fff !important;
+    }
+    
+    .sidebar,
+    .header,
+    .footer,
+    .mobile-nav,
+    .mobile-fab,
+    .no-print {
+        display: none !important;
+    }
+    
+    .content-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa !important;
+        color: #000 !important;
+    }
+    
+    /* 確保印出時內容不會截斷 */
+    .main-content {
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+    
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+}

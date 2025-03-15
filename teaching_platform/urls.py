@@ -2,13 +2,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path,include
-from .views import home, test_celery
+from .views import home, test_celery,dashboard
 from django.views.generic import TemplateView
 from django.views.defaults import page_not_found, server_error, permission_denied
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
+    path('dashboard/', dashboard, name='dashboard'),
     path('accounts/', include('apps.accounts.urls')),  # 添加這一行
     path('test-celery/', test_celery, name='test_celery'),
 ]

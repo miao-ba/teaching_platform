@@ -1,13 +1,146 @@
 <!-- templates/includes/footer.html -->
-<footer class="footer">
+<footer class="footer mt-auto py-3 border-top ">
     <div class="container-fluid">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <span>&copy; 2025 教學語音處理平台</span>
+        <!-- 主要頁尾區域 -->
+        <div class="row py-3">
+            <!-- 網站信息區域 -->
+            <div class="col-lg-4 mb-3">
+                <h5 class="mb-3">教學語音處理平台</h5>
+                <p class="text-muted">
+                    協助教師將課堂錄音轉錄、識別講者並生成教學資源，提升教學效率與學習體驗。
+                </p>
+                <!-- 社交媒體連結 (預留位置，實際尚未實現) -->
+                <div class="social-links">
+                    <a href="javascript:void(0);" onclick="showFooterAlert('Facebook連結')" class="text-muted me-2">
+                        <i class="bi bi-facebook fs-5"></i>
+                    </a>
+                    <a href="javascript:void(0);" onclick="showFooterAlert('Twitter連結')" class="text-muted me-2">
+                        <i class="bi bi-twitter fs-5"></i>
+                    </a>
+                    <a href="javascript:void(0);" onclick="showFooterAlert('LinkedIn連結')" class="text-muted me-2">
+                        <i class="bi bi-linkedin fs-5"></i>
+                    </a>
+                    <a href="javascript:void(0);" onclick="showFooterAlert('YouTube連結')" class="text-muted">
+                        <i class="bi bi-youtube fs-5"></i>
+                    </a>
+                </div>
             </div>
-            <div class="text-muted">
-                <small>版本 0.1.0</small>
+            
+            <!-- 快速連結區域 -->
+            <div class="col-6 col-lg-2 mb-3">
+                <h6 class="mb-3">功能連結</h6>
+                <ul class="nav flex-column footer-links">
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'home' %}" class="nav-link p-0 text-muted">首頁</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('音訊管理')" class="nav-link p-0 text-muted">音訊管理</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('內容生成')" class="nav-link p-0 text-muted">內容生成</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('知識庫')" class="nav-link p-0 text-muted">知識庫</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- 帳戶連結區域 -->
+            <div class="col-6 col-lg-2 mb-3">
+                <h6 class="mb-3">帳戶管理</h6>
+                <ul class="nav flex-column footer-links">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'accounts:profile' %}" class="nav-link p-0 text-muted">個人設定</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'accounts:usage_statistics' %}" class="nav-link p-0 text-muted">使用統計</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'accounts:logout' %}" class="nav-link p-0 text-muted">登出</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'accounts:login' %}" class="nav-link p-0 text-muted">登入</a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="{% url 'accounts:register' %}" class="nav-link p-0 text-muted">註冊</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <!-- 聯絡與支援區域 -->
+            <div class="col-lg-4 mb-3">
+                <h6 class="mb-3">聯絡與支援</h6>
+                <ul class="nav flex-column footer-links">
+                    <li class="nav-item mb-2">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('幫助中心')" class="nav-link p-0 text-muted">
+                            <i class="bi bi-question-circle me-1"></i> 幫助中心
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('常見問題')" class="nav-link p-0 text-muted">
+                            <i class="bi bi-file-earmark-text me-1"></i> 常見問題
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('聯絡我們')" class="nav-link p-0 text-muted">
+                            <i class="bi bi-envelope me-1"></i> 聯絡我們
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('意見反饋')" class="nav-link p-0 text-muted">
+                            <i class="bi bi-chat-left-text me-1"></i> 意見反饋
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 底部版權與法律聲明區域 -->
+        <div class="d-flex flex-column flex-md-row justify-content-between py-3 border-top">
+            <div class="mb-2 mb-md-0">
+                <span>&copy; 2025 教學語音處理平台</span>
+                <span class="text-muted ms-2">版本 0.1.0</span>
+            </div>
+            <div>
+                <ul class="list-inline mb-0">
+                    <li class="list-inline-item">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('隱私政策')" class="text-muted">隱私政策</a>
+                    </li>
+                    <li class="list-inline-item">|</li>
+                    <li class="list-inline-item">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('使用條款')" class="text-muted">使用條款</a>
+                    </li>
+                    <li class="list-inline-item">|</li>
+                    <li class="list-inline-item">
+                        <a href="javascript:void(0);" onclick="showFooterAlert('Cookie政策')" class="text-muted">Cookie政策</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </footer>
+
+<script>
+function showFooterAlert(featureName) {
+    alert(`${featureName}功能正在開發中，敬請期待！`);
+}
+</script>
+
+<style>
+.footer {
+    background-color: #f8f9fa;
+}
+.footer h5, .footer h6 {
+    font-weight: 600;
+}
+.footer-links a:hover {
+    text-decoration: underline;
+    color: #4e73df !important;
+}
+.social-links a:hover {
+    color: #4e73df !important;
+}
+</style>

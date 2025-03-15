@@ -1,10 +1,173 @@
+<!-- templates/includes/messages.html -->
 {% if messages %}
-<div class="messages">
+<div class="messages-container">
     {% for message in messages %}
-    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="alert custom-alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <!-- 根據訊息類型顯示不同圖標 -->
+            {% if message.tags == 'success' %}
+                <i class="bi bi-check-circle-fill alert-icon me-2"></i>
+            {% elif message.tags == 'warning' %}
+                <i class="bi bi-exclamation-triangle-fill alert-icon me-2"></i>
+            {% elif message.tags == 'error' or message.tags == 'danger' %}
+                <i class="bi bi-x-circle-fill alert-icon me-2"></i>
+            {% else %}
+                <i class="bi bi-info-circle-fill alert-icon me-2"></i>
+            {% endif %}
+            
+            <div class="alert-content">
+                <!-- 如果訊息包含HTML，則使用safe過濾器 -->
+                {% if '>' in message|stringformat:'s' and '<' in message|stringformat:'s' %}
+                    {{ message|safe }}
+                {% else %}
+                    {{ message }}
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- 進度條指示自動消失時間 -->
+        <div class="alert-timer-bar"></div>
+        
+        <!-- 關閉按鈕 -->
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="關閉"></button>
     </div>
     {% endfor %}
 </div>
+
+<style>
+.messages-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    max-width: 400px;
+    z-index: 1050;
+    pointer-events: none;
+}
+
+.custom-alert {
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-left: 4px solid;
+    pointer-events: auto;
+    overflow: hidden;
+}
+
+.alert-success {
+    border-left-color: #198754;
+}
+
+.alert-info {
+    border-left-color: #0dcaf0;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-danger, .alert-error {
+    border-left-color: #dc3545;
+}
+
+.alert-icon {
+    font-size: 1.2rem;
+}
+
+.alert-timer-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: rgba(0, 0, 0, 0.2);
+    animation: timer-bar 5s linear forwards;
+}
+
+@keyframes timer-bar {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* 訊息堆疊動畫 */
+.alert.show {
+    animation: alert-in 0.3s ease forwards;
+}
+
+@keyframes alert-in {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 在輪廓模式中保持圖標顏色 */
+.alert-success .alert-icon {
+    color: #198754;
+}
+
+.alert-info .alert-icon {
+    color: #0dcaf0;
+}
+
+.alert-warning .alert-icon {
+    color: #ffc107;
+}
+
+.alert-danger .alert-icon, .alert-error .alert-icon {
+    color: #dc3545;
+}
+
+/* 行動裝置適應 */
+@media (max-width: 576px) {
+    .messages-container {
+        left: 15px;
+        right: 15px;
+        top: 15px;
+        max-width: none;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 自動關閉通知
+    const alerts = document.querySelectorAll('.custom-alert');
+    alerts.forEach(function(alert) {
+        // 設定定時器，5秒後自動關閉
+        setTimeout(function() {
+            if (alert) {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }
+        }, 5000);
+        
+        // 滑鼠懸停時暫停計時器和進度條動畫
+        alert.addEventListener('mouseenter', function() {
+            const timerBar = alert.querySelector('.alert-timer-bar');
+            if (timerBar) {
+                timerBar.style.animationPlayState = 'paused';
+            }
+        });
+        
+        // 滑鼠離開時恢復計時器和進度條動畫
+        alert.addEventListener('mouseleave', function() {
+            const timerBar = alert.querySelector('.alert-timer-bar');
+            if (timerBar) {
+                timerBar.style.animationPlayState = 'running';
+            }
+        });
+    });
+    
+    // 為長訊息添加最大高度和滾動
+    const alertContents = document.querySelectorAll('.alert-content');
+    alertContents.forEach(function(content) {
+        if (content.offsetHeight > 100) {
+            content.style.maxHeight = '100px';
+            content.style.overflowY = 'auto';
+        }
+    });
+});
+</script>
 {% endif %}

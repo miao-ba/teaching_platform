@@ -1,0 +1,430 @@
+/* static/css/theme.css */
+
+/*----------------------------------------------
+ * 主題樣式 - 提供淺色和深色主題切換
+ *----------------------------------------------*/
+
+/* 
+ * 主題變數定義
+ * 使用 CSS 變數實現主題切換
+ */
+
+/* 淺色主題 (預設) */
+:root {
+    /* 背景色 */
+    --theme-bg-primary: #ffffff;
+    --theme-bg-secondary: #f8f9fc;
+    --theme-bg-tertiary: #eaecf4;
+    --theme-bg-card: #ffffff;
+    --theme-bg-input: #ffffff;
+    --theme-bg-dropdown: #ffffff;
+    
+    /* 文字色 */
+    --theme-text-primary: #3a3b45;
+    --theme-text-secondary: #858796;
+    --theme-text-muted: #b7b9cc;
+    --theme-text-inverse: #ffffff;
+    
+    /* 邊框色 */
+    --theme-border-color: #e3e6f0;
+    --theme-border-light: #eaecf4;
+    --theme-border-dark: #d1d3e2;
+    
+    /* 側邊欄 */
+    --theme-sidebar-bg: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+    --theme-sidebar-text: #ffffff;
+    --theme-sidebar-active: rgba(255, 255, 255, 0.1);
+    
+    /* 頭部 */
+    --theme-header-bg: #4e73df;
+    --theme-header-text: #ffffff;
+    
+    /* 卡片 */
+    --theme-card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    --theme-card-header-bg: #ffffff;
+    
+    /* 效果 */
+    --theme-focus-ring: rgba(78, 115, 223, 0.25);
+    --theme-overlay: rgba(58, 59, 69, 0.5);
+    
+    /* 滾動條 */
+    --theme-scrollbar-track: #f8f9fc;
+    --theme-scrollbar-thumb: #d1d3e2;
+    --theme-scrollbar-thumb-hover: #b7b9cc;
+    
+    /* 圖標 */
+    --theme-icon-filter: none;
+}
+
+/* 深色主題 */
+[data-theme="dark"] {
+    /* 背景色 */
+    --theme-bg-primary: #1e2035;
+    --theme-bg-secondary: #161827;
+    --theme-bg-tertiary: #252a41;
+    --theme-bg-card: #252a41;
+    --theme-bg-input: #2c3250;
+    --theme-bg-dropdown: #252a41;
+    
+    /* 文字色 */
+    --theme-text-primary: #e0e0e0;
+    --theme-text-secondary: #b8b9cc;
+    --theme-text-muted: #8a8b9c;
+    --theme-text-inverse: #1e2035;
+    
+    /* 邊框色 */
+    --theme-border-color: #343957;
+    --theme-border-light: #3a4169;
+    --theme-border-dark: #303650;
+    
+    /* 側邊欄 */
+    --theme-sidebar-bg: linear-gradient(180deg, #252a41 10%, #1e2035 100%);
+    --theme-sidebar-text: #e0e0e0;
+    --theme-sidebar-active: rgba(255, 255, 255, 0.05);
+    
+    /* 頭部 */
+    --theme-header-bg: #252a41;
+    --theme-header-text: #e0e0e0;
+    
+    /* 卡片 */
+    --theme-card-shadow: 0 0.15rem 1.75rem 0 rgba(0, 0, 0, 0.2);
+    --theme-card-header-bg: #252a41;
+    
+    /* 效果 */
+    --theme-focus-ring: rgba(78, 115, 223, 0.4);
+    --theme-overlay: rgba(24, 26, 43, 0.5);
+    
+    /* 滾動條 */
+    --theme-scrollbar-track: #1e2035;
+    --theme-scrollbar-thumb: #343957;
+    --theme-scrollbar-thumb-hover: #3a4169;
+    
+    /* 圖標 */
+    --theme-icon-filter: brightness(0.9);
+}
+
+/*----------------------------------------------
+ * 主題應用
+ * 將主題變數應用於實際元素
+ *----------------------------------------------*/
+
+/* 基本元素 */
+body {
+    background-color: var(--theme-bg-secondary);
+    color: var(--theme-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+    transition: color 0.3s ease;
+}
+
+/* 標題 */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--theme-text-primary);
+}
+
+/* 容器和卡片 */
+.card {
+    background-color: var(--theme-bg-card);
+    box-shadow: var(--theme-card-shadow);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-header {
+    background-color: var(--theme-card-header-bg);
+    border-bottom: 1px solid var(--theme-border-color);
+}
+
+.card-footer {
+    background-color: var(--theme-card-header-bg);
+    border-top: 1px solid var(--theme-border-color);
+}
+
+.list-group-item {
+    background-color: var(--theme-bg-card);
+    border-color: var(--theme-border-color);
+    transition: background-color 0.3s ease;
+}
+
+/* 分隔線和邊框 */
+.border, .border-top, .border-right, .border-bottom, .border-left {
+    border-color: var(--theme-border-color) !important;
+}
+
+hr {
+    border-color: var(--theme-border-color);
+}
+
+/* 導航和選單 */
+.nav-tabs {
+    border-bottom: 1px solid var(--theme-border-color);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--theme-bg-card);
+    border-color: var(--theme-border-color) var(--theme-border-color) var(--theme-bg-card);
+    color: var(--theme-text-primary);
+}
+
+.dropdown-menu {
+    background-color: var(--theme-bg-dropdown);
+    border-color: var(--theme-border-color);
+}
+
+.dropdown-item {
+    color: var(--theme-text-primary);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--theme-bg-tertiary);
+    color: var(--theme-text-primary);
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--theme-border-color);
+}
+
+/* 側邊欄 */
+.sidebar {
+    background: var(--theme-sidebar-bg);
+    color: var(--theme-sidebar-text);
+    transition: background 0.3s ease;
+}
+
+.sidebar .nav-link {
+    color: var(--theme-sidebar-text);
+}
+
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+    background-color: var(--theme-sidebar-active);
+}
+
+/* 頁首 */
+.header {
+    background-color: var(--theme-header-bg);
+    color: var(--theme-header-text);
+    transition: background-color 0.3s ease;
+}
+
+/* 表單元素 */
+.form-control, .form-select {
+    background-color: var(--theme-bg-input);
+    border-color: var(--theme-border-color);
+    color: var(--theme-text-primary);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: var(--theme-bg-input);
+    color: var(--theme-text-primary);
+    box-shadow: 0 0 0 0.2rem var(--theme-focus-ring);
+}
+
+.input-group-text {
+    background-color: var(--theme-bg-tertiary);
+    border-color: var(--theme-border-color);
+    color: var(--theme-text-secondary);
+}
+
+/* 表格 */
+.table {
+    color: var(--theme-text-primary);
+}
+
+.table th, .table td {
+    border-color: var(--theme-border-color);
+}
+
+.table thead th {
+    background-color: var(--theme-bg-tertiary);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.025);
+}
+
+[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.025);
+}
+
+/* 超連結 */
+a.text-muted {
+    color: var(--theme-text-muted) !important;
+}
+
+/* 滾動條樣式 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--theme-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--theme-scrollbar-thumb);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-scrollbar-thumb-hover);
+}
+
+/* 按鈕樣式調整 */
+.btn-outline-secondary {
+    border-color: var(--theme-border-color);
+    color: var(--theme-text-secondary);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--theme-bg-tertiary);
+    color: var(--theme-text-primary);
+}
+
+/* 圖標調整 */
+[data-theme="dark"] .bi {
+    filter: var(--theme-icon-filter);
+}
+
+/* 預格式化文本 */
+pre, code {
+    background-color: var(--theme-bg-tertiary);
+    color: var(--theme-text-primary);
+    border-color: var(--theme-border-color);
+}
+
+/* 進度條 */
+.progress {
+    background-color: var(--theme-bg-tertiary);
+}
+
+/* 徽章調整 */
+.badge.bg-light {
+    color: var(--theme-text-primary);
+}
+
+[data-theme="dark"] .badge.bg-light {
+    background-color: var(--theme-bg-tertiary) !important;
+}
+
+/* 模態對話框 */
+.modal-content {
+    background-color: var(--theme-bg-card);
+    border-color: var(--theme-border-color);
+}
+
+.modal-header, .modal-footer {
+    border-color: var(--theme-border-color);
+}
+
+/* 提示泡泡 */
+.tooltip-inner {
+    background-color: var(--theme-bg-tertiary);
+    color: var(--theme-text-primary);
+}
+
+/* 圖片和圖標調整 */
+[data-theme="dark"] img:not([src*=".svg"]) {
+    filter: brightness(0.9);
+}
+
+/*----------------------------------------------
+ * 主題切換圖標
+ *----------------------------------------------*/
+.theme-toggle-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.theme-toggle {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+.theme-toggle-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.theme-toggle-label:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.theme-icon-light,
+.theme-icon-dark {
+    transition: transform 0.5s ease;
+}
+
+.theme-icon-light {
+    display: block;
+}
+
+.theme-icon-dark {
+    display: none;
+}
+
+[data-theme="dark"] .theme-icon-light {
+    display: none;
+}
+
+[data-theme="dark"] .theme-icon-dark {
+    display: block;
+}
+
+/*----------------------------------------------
+ * 主題切換過渡動畫
+ *----------------------------------------------*/
+.theme-transition * {
+    transition-property: background-color, border-color, color, box-shadow;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+}
+
+/* 主題切換時的特效 */
+@keyframes themeChange {
+    0% {
+        filter: blur(0);
+        opacity: 1;
+    }
+    50% {
+        filter: blur(2px);
+        opacity: 0.8;
+    }
+    100% {
+        filter: blur(0);
+        opacity: 1;
+    }
+}
+
+.theme-changing {
+    animation: themeChange 0.5s ease forwards;
+}
+
+/* 明暗主題專屬可見元素 */
+.dark-mode-only {
+    display: none;
+}
+
+.light-mode-only {
+    display: initial;
+}
+
+[data-theme="dark"] .dark-mode-only {
+    display: initial;
+}
+
+[data-theme="dark"] .light-mode-only {
+    display: none;
+}
