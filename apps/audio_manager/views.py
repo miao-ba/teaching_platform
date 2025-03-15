@@ -8,10 +8,12 @@ from django.db.models import Count
 from django.views.generic import ListView
 from django.db.models import Q
 from .models import AudioFile
-from .forms import AudioUploadForm
+from .forms import AudioUploadForm,AudioSearchForm
 #from core.payment.quota import QuotaManager, ServiceType
 from django.views.generic import DeleteView
 from django.views.generic import DetailView
+from django.http import JsonResponse
+from django.utils import timezone
 class AudioUploadView(LoginRequiredMixin, CreateView):
     """音訊上傳視圖"""
     model = AudioFile
@@ -69,70 +71,39 @@ class AudioListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     
     def get_queryset(self):
-        """根據查詢參數過濾音訊檔案"""
         queryset = AudioFile.objects.filter(user=self.request.user)
         
-        # 搜尋功能
-        search_query = self.request.GET.get('q')
-        if search_query:
-            queryset = queryset.filter(
-                Q(title__icontains=search_query) | 
-                Q(description__icontains=search_query)
-            )
-        
-        # 狀態過濾
-        status_filter = self.request.GET.get('status')
-        if status_filter and status_filter != 'all':
-            queryset = queryset.filter(processing_status=status_filter)
-        
-        # 日期過濾
-        date_filter = self.request.GET.get('date')
-        if date_filter == 'today':
-            from django.utils import timezone
-            today = timezone.now().date()
-            queryset = queryset.filter(created_at__date=today)
-        elif date_filter == 'week':
-            from django.utils import timezone
-            import datetime
-            start_of_week = timezone.now().date() - datetime.timedelta(days=7)
-            queryset = queryset.filter(created_at__date__gte=start_of_week)
-        elif date_filter == 'month':
-            from django.utils import timezone
-            import datetime
-            start_of_month = timezone.now().date() - datetime.timedelta(days=30)
-            queryset = queryset.filter(created_at__date__gte=start_of_month)
-        
-        # 排序
-        sort_by = self.request.GET.get('sort_by', '-created_at')
-        valid_sort_fields = ['title', '-title', 'created_at', '-created_at', 
-                            'duration', '-duration', 'processing_status', '-processing_status']
-        
-        if sort_by in valid_sort_fields:
-            queryset = queryset.order_by(sort_by)
+        # 初始化搜尋表單
+        form = AudioSearchForm(self.request.GET or None)
+        if form.is_valid():
+            queryset = form.filter_queryset(queryset)
         else:
-            queryset = queryset.order_by('-created_at')  # 預設按建立時間降序排列
+            # 預設排序：最新上傳
+            queryset = queryset.order_by('-created_at')
         
+        self.form = form  # 儲存表單實例以供在 get_context_data 中使用
         return queryset
     
     def get_context_data(self, **kwargs):
-        """添加上下文資料"""
         context = super().get_context_data(**kwargs)
-        
-        # 添加當前篩選和排序參數，用於維持分頁時的查詢條件
+        context['form'] = getattr(self, 'form', AudioSearchForm())
         context['current_query'] = self.request.GET.copy()
+        
         if 'page' in context['current_query']:
             del context['current_query']['page']
+            
+        # 計算統計數據
+        context['total_files'] = AudioFile.objects.filter(user=self.request.user).count()
+        context['completed_files'] = AudioFile.objects.filter(
+            user=self.request.user, 
+            processing_status='completed'
+        ).count()
+        context['processing_files'] = AudioFile.objects.filter(
+            user=self.request.user, 
+            processing_status__in=['pending', 'processing']
+        ).count()
         
-        # 添加排序和篩選選項
-        context['sort_options'] = [
-            {'value': '-created_at', 'label': '最新上傳', 'selected': self.request.GET.get('sort_by') == '-created_at'},
-            {'value': 'created_at', 'label': '最舊上傳', 'selected': self.request.GET.get('sort_by') == 'created_at'},
-            {'value': 'title', 'label': '標題 A-Z', 'selected': self.request.GET.get('sort_by') == 'title'},
-            {'value': '-title', 'label': '標題 Z-A', 'selected': self.request.GET.get('sort_by') == '-title'},
-            {'value': 'duration', 'label': '時長 (短到長)', 'selected': self.request.GET.get('sort_by') == 'duration'},
-            {'value': '-duration', 'label': '時長 (長到短)', 'selected': self.request.GET.get('sort_by') == '-duration'},
-        ]
-        
+        # 為模板準備下拉選單選項
         context['status_options'] = [
             {'value': 'all', 'label': '全部狀態', 'selected': self.request.GET.get('status') == 'all' or not self.request.GET.get('status')},
             {'value': 'pending', 'label': '等待處理', 'selected': self.request.GET.get('status') == 'pending'},
@@ -146,15 +117,20 @@ class AudioListView(LoginRequiredMixin, ListView):
             {'value': 'today', 'label': '今天', 'selected': self.request.GET.get('date') == 'today'},
             {'value': 'week', 'label': '過去一週', 'selected': self.request.GET.get('date') == 'week'},
             {'value': 'month', 'label': '過去一個月', 'selected': self.request.GET.get('date') == 'month'},
+            {'value': 'custom', 'label': '自訂日期範圍', 'selected': self.request.GET.get('date') == 'custom'},
         ]
         
-        # 記住搜尋查詢
-        context['search_query'] = self.request.GET.get('q', '')
+        context['sort_options'] = [
+            {'value': '-created_at', 'label': '最新上傳', 'selected': self.request.GET.get('sort_by') == '-created_at' or not self.request.GET.get('sort_by')},
+            {'value': 'created_at', 'label': '最舊上傳', 'selected': self.request.GET.get('sort_by') == 'created_at'},
+            {'value': 'title', 'label': '標題 A-Z', 'selected': self.request.GET.get('sort_by') == 'title'},
+            {'value': '-title', 'label': '標題 Z-A', 'selected': self.request.GET.get('sort_by') == '-title'},
+            {'value': 'duration', 'label': '時長 (短到長)', 'selected': self.request.GET.get('sort_by') == 'duration'},
+            {'value': '-duration', 'label': '時長 (長到短)', 'selected': self.request.GET.get('sort_by') == '-duration'},
+        ]
         
-        # 添加統計資訊
-        context['total_files'] = AudioFile.objects.filter(user=self.request.user).count()
-        context['completed_files'] = AudioFile.objects.filter(user=self.request.user, processing_status='completed').count()
-        context['processing_files'] = AudioFile.objects.filter(user=self.request.user, processing_status__in=['pending', 'processing']).count()
+        context['search_query'] = self.request.GET.get('q', '')
+        context['show_custom_date'] = self.request.GET.get('date') == 'custom'
         
         return context
 
@@ -188,46 +164,49 @@ class AudioDeleteView(LoginRequiredMixin, DeleteView):
     # 對於直接的 GET 請求，重定向到列表頁面
     def get(self, request, *args, **kwargs):
         return redirect('audio_manager:list')
-class AudioDetailView(LoginRequiredMixin, DetailView):
-    """音訊詳情視圖"""
-    model = AudioFile
-    template_name = 'audio_manager/detail.html'
-    context_object_name = 'audio_file'
-    
-    def get_queryset(self):
-        """確保只能查看自己的音訊檔案"""
-        return AudioFile.objects.filter(user=self.request.user)
 
 class AudioDetailView(LoginRequiredMixin, DetailView):
-    """音訊詳情視圖"""
     model = AudioFile
     template_name = 'audio_manager/detail.html'
     context_object_name = 'audio_file'
-    
     def get_queryset(self):
-        """確保只能查看自己的音訊檔案"""
         return AudioFile.objects.filter(user=self.request.user)
-    
     def get_context_data(self, **kwargs):
-        """獲取上下文資料，添加相關資訊"""
         context = super().get_context_data(**kwargs)
         audio_file = self.get_object()
-        
-        # 未來將添加轉錄相關資訊
-        # if hasattr(audio_file, "transcript"):
-        #     context["transcript"] = audio_file.transcript
-        #     context["segments"] = audio_file.transcript.segments.all().order_by("start_time")
-        
-        # 未來將添加內容生成相關資訊
-        # if hasattr(audio_file, "transcript") and hasattr(audio_file.transcript, "summary"):
-        #     context["summary"] = audio_file.transcript.summary
-        
-        # 添加處理狀態的CSS類別映射
         context['status_classes'] = {
             'pending': 'warning',
             'processing': 'info',
             'completed': 'success',
             'failed': 'danger'
         }
-        
         return context
+def audio_status(request, pk):
+    """AJAX 端點，返回音訊檔案的處理狀態"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': '請先登入'}, status=401)
+    
+    try:
+        audio_file = AudioFile.objects.get(pk=pk, user=request.user)
+        data = {
+            'id': audio_file.id,
+            'status': audio_file.processing_status,
+            'status_display': audio_file.get_processing_status_display(),
+            'message': audio_file.processing_message,
+            'last_updated': timezone.localtime(audio_file.updated_at).strftime('%Y-%m-%d %H:%M:%S')
+        }
+        
+        # 添加完成時間（如果已完成）
+        if audio_file.processed_at:
+            data['processed_at'] = timezone.localtime(audio_file.processed_at).strftime('%Y-%m-%d %H:%M:%S')
+            processing_time = (audio_file.processed_at - audio_file.created_at).total_seconds()
+            data['processing_time'] = round(processing_time, 2)
+        
+        # 添加時長資訊（如果可用）
+        if audio_file.duration:
+            data['duration'] = audio_file.duration
+            data['duration_display'] = audio_file.get_duration_display()
+        
+        return JsonResponse(data)
+    except AudioFile.DoesNotExist:
+        return JsonResponse({'error': '找不到指定的音訊檔案'}, status=404)

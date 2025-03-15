@@ -221,19 +221,18 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/modules/status-tracker.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // 音訊播放器時間顯示
     const audioPlayer = document.getElementById('audio-player');
     const currentTimeDisplay = document.getElementById('current-time');
-    
     if (audioPlayer && currentTimeDisplay) {
         audioPlayer.addEventListener('timeupdate', function() {
             const currentTime = formatTime(audioPlayer.currentTime);
             currentTimeDisplay.textContent = currentTime;
         });
     }
-    
     // 格式化時間為 HH:MM:SS 格式
     function formatTime(seconds) {
         seconds = Math.floor(seconds);
@@ -241,18 +240,47 @@ document.addEventListener('DOMContentLoaded', function() {
         seconds %= 3600;
         const minutes = Math.floor(seconds / 60);
         seconds %= 60;
-        
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
-    
     // 刪除確認函數
     window.confirmDelete = function(title, deleteUrl) {
         document.getElementById('deleteItemName').textContent = title;
         document.getElementById('deleteForm').action = deleteUrl;
-    
         const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
         deleteModal.show();
     };
+
+    // 初始化音訊狀態追蹤器
+    {% if audio_file.processing_status == 'pending' or audio_file.processing_status == 'processing' %}
+    const audioId = {{ audio_file.id }};
+    const statusTracker = initAudioStatusTracker(audioId, {
+        statusBadgeSelector: '#processing-status-badge',
+        statusMessageSelector: '#processing-status-message',
+        progressBarSelector: '#processing-progress-bar',
+        containerSelector: '.transcript-container',
+        onStatusChange: function(data) {
+            console.log('音訊狀態已更新:', data.status_display);
+            // 更新上次更新時間
+            const lastUpdatedElement = document.getElementById('last-updated-time');
+            if (lastUpdatedElement) {
+                lastUpdatedElement.textContent = data.last_updated;
+            }
+        },
+        onComplete: function(data) {
+            console.log('音訊處理已完成');
+            // 顯示重新載入提示
+            const reloadAlert = document.createElement('div');
+            reloadAlert.className = 'alert alert-success mt-3';
+            reloadAlert.innerHTML = '<i class="bi bi-check-circle me-2"></i> 處理已完成，頁面將在 3 秒後重新載入...';
+            document.querySelector('.transcript-container').appendChild(reloadAlert);
+            
+            // 3 秒後重新載入頁面
+            setTimeout(function() {
+                window.location.reload();
+            }, 3000);
+        }
+    });
+    {% endif %}
 });
 </script>
 {% endblock %}
