@@ -94,6 +94,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
 # 預設主鍵欄位類型
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -103,6 +104,9 @@ CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localho
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_ACKS_LATE = True  # 確保任務在完成後才確認
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # 減少預取，提高穩定性
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True  # 解決棄用警告
 
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'home'  # 可以修改為儀表板或其他適合的頁面

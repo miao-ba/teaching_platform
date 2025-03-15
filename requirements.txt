@@ -20,6 +20,7 @@ librosa
 pydub
 vosk
 mutagen  # 音訊元數據擷取
+ffmpeg-python  # 使用 FFmpeg 處理音訊
 
 # 工具與實用程式
 python-dotenv
