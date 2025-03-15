@@ -35,18 +35,18 @@
                     <div class="collapse" id="audioSubmenu">
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item">
-                                <a class="nav-link" href="javascript:void(0);" onclick="showDummyAlert('上傳音訊')">
+                                <a class="nav-link" href="{% url 'audio_manager:upload' %}">
                                     <i class="bi bi-upload me-2"></i>上傳音訊
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="javascript:void(0);" onclick="showDummyAlert('我的音訊')">
+                                <a class="nav-link" href="{% url 'audio_manager:list' %}">
                                     <i class="bi bi-collection-play me-2"></i>我的音訊
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="javascript:void(0);" onclick="showDummyAlert('轉錄記錄')">
-                                    <i class="bi bi-card-text me-2"></i>轉錄記錄
+                                <a class="nav-link" href="{% url 'audio_manager:list' %}?status=completed">
+                                    <i class="bi bi-card-text me-2"></i>已轉錄音訊
                                 </a>
                             </li>
                         </ul>

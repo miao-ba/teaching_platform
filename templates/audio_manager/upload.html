@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}上傳音訊 - {{ block.super }}{% endblock %}
+{% block page_title %}上傳音訊{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">上傳課堂錄音</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="upload-form">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">錄音標題</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">描述（選填）</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.file.id_for_label }}" class="form-label">錄音檔案</label>
+                        <div class="custom-file-upload" id="drop-area">
+                            <input type="file" id="{{ form.file.id_for_label }}" name="{{ form.file.html_name }}" class="d-none" accept="audio/*">
+                            <div class="text-center py-5" id="upload-prompt">
+                                <i class="bi bi-cloud-upload fs-1 text-primary"></i>
+                                <p class="mt-2 mb-0">拖放或點擊此處選擇音訊檔案</p>
+                                <p class="text-muted small mt-1">支援格式：MP3, WAV, OGG, M4A, FLAC (最大 100MB)</p>
+                            </div>
+                            <div id="file-preview" class="mt-2 d-none">
+                                <div class="alert alert-info d-flex align-items-center">
+                                    <i class="bi bi-file-earmark-music me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <span id="file-name"></span>
+                                        <small class="d-block text-muted" id="file-size"></small>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="remove-file">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% if form.file.errors %}
+                                <div class="text-danger mt-2">
+                                    {% for error in form.file.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- 使用配額提示 -->
+                    <div class="alert alert-info">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <strong>本月已使用:</strong> {{ user_audio_count }}{% if audio_quota > 0 %}/{{ audio_quota }}{% endif %}
+                                {% if audio_quota > 0 %}
+                                <div class="progress mt-1" style="height: 6px;">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ user_audio_count|divisibleby:audio_quota|default:0|stringformat:".1f"|floatformat:1|default:0 }}%;" 
+                                         aria-valuenow="{{ user_audio_count }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="{{ audio_quota }}"></div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% if user.profile.subscription_plan == 'free' %}
+                            <a href="#" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-stars me-1"></i> 升級帳戶
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary" id="upload-btn" disabled>
+                            <i class="bi bi-cloud-upload"></i> 上傳並處理
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">上傳說明</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">上傳後系統將自動進行處理，包括:
+                        <ul>
+                            <li>語音轉文字</li>
+                            <li>講者識別</li>
+                            <li>自動生成摘要</li>
+                        </ul>
+                    </li>
+                    <li class="list-group-item">處理時間根據檔案大小不同，通常需要 2-10 分鐘</li>
+                    <li class="list-group-item">處理完成後，您可以在音訊列表查看結果</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('{{ form.file.id_for_label }}');
+    const dropArea = document.getElementById('drop-area');
+    const uploadPrompt = document.getElementById('upload-prompt');
+    const filePreview = document.getElementById('file-preview');
+    const fileName = document.getElementById('file-name');
+    const fileSize = document.getElementById('file-size');
+    const removeFile = document.getElementById('remove-file');
+    const uploadBtn = document.getElementById('upload-btn');
+    
+    // 拖放功能
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+        dropArea.classList.add('border-primary');
+        dropArea.classList.add('bg-light');
+    }
+    
+    function unhighlight() {
+        dropArea.classList.remove('border-primary');
+        dropArea.classList.remove('bg-light');
+    }
+    
+    // 點擊上傳區域觸發檔案選擇
+    dropArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+    
+    // 拖放檔案處理
+    dropArea.addEventListener('drop', function(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            fileInput.files = files;
+            updateFilePreview(files[0]);
+        }
+    });
+    
+    // 檔案選擇變更事件
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            updateFilePreview(this.files[0]);
+        }
+    });
+    
+    // 移除檔案按鈕
+    removeFile.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        fileInput.value = '';
+        uploadPrompt.classList.remove('d-none');
+        filePreview.classList.add('d-none');
+        uploadBtn.disabled = true;
+    });
+    
+    // 更新檔案預覽
+    function updateFilePreview(file) {
+        // 檢查檔案類型
+        const allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/x-m4a', 'audio/flac', 'audio/x-flac'];
+        const fileType = file.type;
+        
+        if (!allowedTypes.includes(fileType) && !file.name.match(/\.(mp3|wav|ogg|m4a|flac)$/i)) {
+            alert('不支援的檔案格式。支援的格式有: MP3, WAV, OGG, M4A, FLAC');
+            fileInput.value = '';
+            return;
+        }
+        
+        // 檢查檔案大小
+        const maxSize = 100 * 1024 * 1024; // 100MB
+        if (file.size > maxSize) {
+            alert('檔案大小不能超過100MB');
+            fileInput.value = '';
+            return;
+        }
+        
+        // 顯示檔案資訊
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        
+        uploadPrompt.classList.add('d-none');
+        filePreview.classList.remove('d-none');
+        uploadBtn.disabled = false;
+    }
+    
+    // 格式化檔案大小
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+});
+</script>
+{% endblock %}

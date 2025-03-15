@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     
     # 自定義應用
     'apps.accounts.apps.AccountsConfig',  # 使用完整路徑
+    'apps.audio_manager.apps.AudioManagerConfig',
 ]
 
 # 中間件設定

@@ -11,6 +11,7 @@ urlpatterns = [
     path('', home, name='home'),
     path('dashboard/', dashboard, name='dashboard'),
     path('accounts/', include('apps.accounts.urls')),  # 添加這一行
+    path('audio/', include('apps.audio_manager.urls')),
     path('test-celery/', test_celery, name='test_celery'),
 ]
 

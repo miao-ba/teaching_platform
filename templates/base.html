@@ -79,7 +79,7 @@
             <i class="bi bi-speedometer2"></i>
             <span>儀表板</span>
         </a>
-        <a href="javascript:void(0);" data-toggle="mobile-drawer" data-target="#audioDrawer" class="mobile-nav-item">
+        <a href="{% url 'audio_manager:list' %}" class="mobile-nav-item {% if 'audio' in request.path %}active{% endif %}">
             <i class="bi bi-file-earmark-music"></i>
             <span>音訊</span>
         </a>
@@ -106,14 +106,14 @@
         </div>
         <div class="mobile-drawer-body">
             <div class="list-group list-group-flush">
-                <a href="javascript:void(0);" onclick="showDummyFunction('我的音訊')" class="list-group-item list-group-item-action">
+                <a href="{% url 'audio_manager:list' %}" class="list-group-item list-group-item-action">
                     <i class="bi bi-collection-play me-2"></i> 我的音訊
                 </a>
-                <a href="javascript:void(0);" onclick="showDummyFunction('轉錄記錄')" class="list-group-item list-group-item-action">
-                    <i class="bi bi-card-text me-2"></i> 轉錄記錄
+                <a href="{% url 'audio_manager:upload' %}" class="list-group-item list-group-item-action">
+                    <i class="bi bi-upload me-2"></i> 上傳音訊
                 </a>
-                <a href="javascript:void(0);" onclick="showDummyFunction('講者識別')" class="list-group-item list-group-item-action">
-                    <i class="bi bi-person-lines-fill me-2"></i> 講者識別
+                <a href="{% url 'audio_manager:list' %}?status=completed" class="list-group-item list-group-item-action">
+                    <i class="bi bi-card-text me-2"></i> 已轉錄音訊
                 </a>
             </div>
         </div>
@@ -150,33 +150,13 @@
             <button type="button" class="btn-close" data-dismiss="mobile-drawer" aria-label="關閉"></button>
         </div>
         <div class="mobile-drawer-body">
-            <form action="#" id="mobile-upload-form">
-                <div class="mb-3">
-                    <label for="mobile-title" class="form-label">錄音標題</label>
-                    <input type="text" class="form-control" id="mobile-title" placeholder="請輸入標題">
-                </div>
-                
-                <div class="mb-3">
-                    <label for="mobile-file" class="form-label">錄音檔案</label>
-                    <div class="custom-file-upload">
-                        <input type="file" accept="audio/*" id="mobile-file" class="d-none">
-                        <div class="text-center">
-                            <i class="bi bi-upload fs-1 text-primary"></i>
-                            <p class="mt-2 mb-0">點擊選擇音訊檔案</p>
-                            <p class="text-muted small mt-1">支援 MP3, WAV, OGG 等格式</p>
-                        </div>
-                    </div>
-                    <div id="mobile-file-preview" class="mt-2 d-none">
-                        <div class="alert alert-info d-flex align-items-center">
-                            <i class="bi bi-file-earmark-music me-2"></i>
-                            <span id="mobile-file-name"></span>
-                        </div>
-                    </div>
-                </div>
+            <form action="{% url 'audio_manager:upload' %}" method="post" id="mobile-upload-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <!-- 表單內容... -->
             </form>
         </div>
         <div class="mobile-drawer-footer">
-            <button type="button" class="btn btn-primary d-block w-100" onclick="showDummyFunction('上傳音訊')">
+            <button type="submit" form="mobile-upload-form" class="btn btn-primary d-block w-100">
                 上傳並處理
             </button>
         </div>
