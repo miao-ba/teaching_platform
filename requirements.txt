@@ -19,6 +19,7 @@ openai
 librosa
 pydub
 vosk
+mutagen  # 音訊元數據擷取
 
 # 工具與實用程式
 python-dotenv

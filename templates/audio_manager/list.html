@@ -236,14 +236,17 @@
                 <h5 class="modal-title">確認刪除</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
             </div>
-            <div class="modal-body">
-                <p>您確定要刪除 <strong id="deleteItemName"></strong> 嗎？</p>
-                <p class="text-danger">此操作無法恢復。</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                <a href="#" id="deleteConfirmBtn" class="btn btn-danger">確認刪除</a>
-            </div>
+            <form id="deleteForm" method="post" action="">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>您確定要刪除 <strong id="deleteItemName"></strong> 嗎？</p>
+                    <p class="text-danger">此操作無法恢復。</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-danger">確認刪除</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -251,12 +254,12 @@
 
 {% block extra_js %}
 <script>
-function confirmDelete(title, deleteUrl) {
-    document.getElementById('deleteItemName').textContent = title;
-    document.getElementById('deleteConfirmBtn').href = deleteUrl;
-    
-    var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-    deleteModal.show();
-}
+    function confirmDelete(title, deleteUrl) {
+        document.getElementById('deleteItemName').textContent = title;
+        document.getElementById('deleteForm').action = deleteUrl;
+        
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        deleteModal.show();
+    }
 </script>
 {% endblock %}

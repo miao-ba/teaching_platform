@@ -52,9 +52,9 @@ class AudioUploadView(LoginRequiredMixin, CreateView):
         # 保存音訊檔案
         self.object = form.save()
         
-        # 後續將添加異步處理任務
-        # from .tasks import process_audio_file
-        # process_audio_file.delay(self.object.id)
+        # 啟動異步處理任務
+        from .tasks import process_audio_file
+        process_audio_file.delay(self.object.id)
         
         messages.success(
             self.request, 
@@ -168,16 +168,26 @@ class AudioDeleteView(LoginRequiredMixin, DeleteView):
         return AudioFile.objects.filter(user=self.request.user)
     
     def delete(self, request, *args, **kwargs):
-        """自定義刪除邏輯，添加成功訊息"""
-        audio = self.get_object()
-        title = audio.title
-        response = super().delete(request, *args, **kwargs)
-        messages.success(request, f'音訊「{title}」已成功刪除。')
-        return response
+        """刪除音訊檔案並返回成功訊息"""
+        try:
+            audio = self.get_object()
+            title = audio.title
+            
+            # 執行刪除操作
+            result = super().delete(request, *args, **kwargs)
+            
+            # 添加成功訊息
+            messages.success(request, f'音訊「{title}」已成功刪除。')
+            return result
+            
+        except Exception as e:
+            # 記錄錯誤並返回錯誤訊息
+            messages.error(request, f'刪除失敗：{str(e)}')
+            return redirect('audio_manager:list')
     
-    # 如需防止直接GET請求刪除，可取消下方註解
-    # def get(self, request, *args, **kwargs):
-    #     return self.post(request, *args, **kwargs)
+    # 對於直接的 GET 請求，重定向到列表頁面
+    def get(self, request, *args, **kwargs):
+        return redirect('audio_manager:list')
 class AudioDetailView(LoginRequiredMixin, DetailView):
     """音訊詳情視圖"""
     model = AudioFile

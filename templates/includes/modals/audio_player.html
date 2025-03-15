@@ -1,0 +1,131 @@
+<!-- templates/includes/audio_player.html -->
+<div class="audio-player-card">
+    <div class="audio-player-controls">
+        <div class="audio-player-main">
+            <button class="btn btn-circle btn-primary btn-play-pause">
+                <i class="bi bi-play-fill"></i>
+            </button>
+            <div class="audio-progress-container">
+                <div class="audio-player-info">
+                    <span class="time-current">00:00:00</span>
+                    <span class="time-total">{{ duration|default:"00:00:00" }}</span>
+                </div>
+                <div class="progress audio-progress">
+                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        <div class="audio-player-extra">
+            <div class="volume-control">
+                <button class="btn btn-sm btn-icon volume-toggle">
+                    <i class="bi bi-volume-up"></i>
+                </button>
+                <div class="volume-slider-container">
+                    <input type="range" class="volume-slider" min="0" max="100" value="100">
+                </div>
+            </div>
+            <div class="speed-control">
+                <select class="form-select form-select-sm playback-speed">
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.25">1.25x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <audio id="audio-player" class="d-none">
+        <source src="{{ audio_file.file.url }}" type="audio/{{ audio_file.format }}">
+        您的瀏覽器不支援音訊播放。
+    </audio>
+</div>
+
+<style>
+.audio-player-card {
+    border-radius: 0.5rem;
+    background-color: var(--theme-bg-card);
+    padding: 1rem;
+    box-shadow: var(--theme-card-shadow);
+}
+
+.audio-player-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.audio-player-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.audio-progress-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.audio-player-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--theme-text-secondary);
+}
+
+.progress.audio-progress {
+    height: 0.5rem;
+    background-color: var(--theme-bg-tertiary);
+    cursor: pointer;
+}
+
+.audio-player-extra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--theme-border-color);
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.volume-slider-container {
+    width: 80px;
+}
+
+.volume-slider {
+    width: 100%;
+    height: 4px;
+}
+
+.playback-speed {
+    width: auto;
+}
+
+/* 響應式調整 */
+@media (min-width: 768px) {
+    .audio-player-controls {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .audio-player-main {
+        flex: 1;
+    }
+    
+    .audio-player-extra {
+        width: 30%;
+        border-top: none;
+        padding-top: 0;
+        border-left: 1px solid var(--theme-border-color);
+        padding-left: 0.5rem;
+    }
+}
+</style>
