@@ -3,7 +3,7 @@ from .models import AudioFile
 from utils.validators import validate_audio_file
 from django.utils import timezone
 import datetime
-from . import models
+from django.db.models import Q
 
 class AudioUploadForm(forms.ModelForm):
     class Meta:
@@ -170,8 +170,8 @@ class AudioSearchForm(forms.Form):
         q = self.cleaned_data.get('q')
         if q:
             queryset = queryset.filter(
-                models.Q(title__icontains=q) |
-                models.Q(description__icontains=q)
+                Q(title__icontains=q) |
+                Q(description__icontains=q)
             )
         
         # 處理狀態篩選

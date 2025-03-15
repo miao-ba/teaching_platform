@@ -7,7 +7,8 @@ import os
 import tempfile
 import time
 from pathlib import Path
-
+from django.utils import timezone
+from core.audio.transcriber import get_transcriber, create_transcript_from_result
 # 設置日誌記錄器
 logger = logging.getLogger(__name__)
 

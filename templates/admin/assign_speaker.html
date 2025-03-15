@@ -1,0 +1,28 @@
+<!-- templates/admin/assign_speaker.html -->
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ title }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="mb-3">
+            <h4>選擇的片段</h4>
+            <div class="list-group">
+                {% for segment in segments %}
+                <div class="list-group-item">
+                    <strong>時間:</strong> {{ segment.start_time|floatformat:1 }} - {{ segment.end_time|floatformat:1 }}s<br>
+                    <strong>當前講者:</strong> {{ segment.speaker_name|default:segment.speaker_id|default:"未指定" }}<br>
+                    <strong>文本:</strong> {{ segment.text|truncatechars:100 }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="submit-row">
+            <input type="submit" name="apply" value="指定講者" class="default">
+            <a href="{{ request.get_full_path }}" class="button cancel-link">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
