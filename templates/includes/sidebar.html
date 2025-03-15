@@ -36,6 +36,12 @@
             
             {% if user.is_authenticated %}
             <li class="nav-item mt-auto">
+                <a href="{% url 'accounts:usage_statistics' %}" class="nav-link">
+                    <i class="bi bi-person me-2"></i>
+                    <span class="nav-text">使用統計</span>
+                </a>
+            </li>
+            <li class="nav-item mt-auto">
                 <a href="{% url 'accounts:logout' %}" class="nav-link text-danger">
                     <i class="bi bi-box-arrow-right me-2"></i>
                     <span class="nav-text">登出</span>
